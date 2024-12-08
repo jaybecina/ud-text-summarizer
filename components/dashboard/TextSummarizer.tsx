@@ -1,44 +1,51 @@
 "use client";
 
-import * as React from "react";
-import { Clipboard, Copy, FileText, Grid } from "lucide-react";
-
+import { useEffect, useState } from "react";
+import { Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardHeader,
-  CardContent,
-  CardFooter,
-} from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Textarea } from "@/components/ui/textarea";
+import EmptySummaryResult from "@/components/dashboard/EmptySummaryResult";
+import SummaryResult from "@/components/dashboard/SummaryResult";
+import SummarizerForm from "@/components/dashboard/SummarizerForm";
+import { toast } from "react-hot-toast";
 
 const TextSummarizer = () => {
-  const [text, setText] = React.useState<string>("");
-  const [summary, setSummary] = React.useState<string>("");
-  const [wordCount, setWordCount] = React.useState<number>(0);
-  const [charCount, setCharCount] = React.useState<number>(0);
-  const [summaryWordCount, setSummaryWordCount] = React.useState<number>(0);
-  const [summaryCharCount, setSummaryCharCount] = React.useState<number>(0);
-  const [isLoading, setIsLoading] = React.useState<boolean>(false);
+  const [summary, setSummary] = useState<string>(`
+  Naruto Uzumaki became the greatest shinobi of his time through
+  unparalleled power, relentless determination, and his ability to
+  unite and inspire others. Mastering Kurama's chakra and the Sage of
+  Six Paths' power, he achieved near-godlike abilities, defeating
+  formidable foes like Kaguya Ōtsutsuki. His leadership united the
+  shinobi nations, ending generations of conflict. Despite personal
+  struggles, Naruto turned his pain into strength, becoming a beacon
+  of hope and proving that hard work and perseverance could overcome
+  any obstacle.
+`);
 
-  const handleSummarize = async () => {
-    console.log("handleSummarize");
-  };
+  const [summaryWordCount, setSummaryWordCount] = useState<number>(0);
+  const [summaryCharCount, setSummaryCharCount] = useState<number>(0);
 
-  const handlePaste = async () => {
-    console.log("handlePaste");
-  };
+  useEffect(() => {
+    const wordCount = summary.trim().split(/\s+/).length;
+    const charCount = summary.length;
+
+    setSummaryWordCount(wordCount);
+    setSummaryCharCount(charCount);
+  }, [summary]);
 
   const handleCopy = async () => {
     console.log("handleCopy");
+    if (summary) {
+      try {
+        await navigator.clipboard.writeText(summary);
+        toast.success("Copied to Clipboard!");
+      } catch (error) {
+        console.error("Failed to copy text to clipboard:", error);
+        toast.error("Failed to copy text to clipboard");
+      }
+    } else {
+      console.log("No summary to copy!");
+      toast.error("No summary to copy!");
+    }
   };
 
   return (
@@ -50,71 +57,9 @@ const TextSummarizer = () => {
         </p>
       </div>
 
-      <Card className="mb-6">
-        <CardHeader className="bg-ud-black rounded-tl-lg rounded-tr-lg p-2"></CardHeader>
-        <CardContent className="p-6 space-y-4">
-          <div className="flex justify-center gap-4">
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button variant="outline" className="flex flex-col min-h-fit">
-                  <Grid className="mr-2 h-4 w-4" />
-                  Enter Text
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Enter Your Text</DialogTitle>
-                  <DialogDescription>
-                    Paste or type the text you want to summarize
-                  </DialogDescription>
-                </DialogHeader>
-                <Textarea
-                  value={text}
-                  onChange={(e) => setText(e.target.value)}
-                  className="min-h-[200px]"
-                  placeholder="Enter your text here..."
-                />
-              </DialogContent>
-            </Dialog>
-
-            <Button
-              variant="outline"
-              onClick={handlePaste}
-              className="flex flex-col min-h-fit"
-            >
-              <Clipboard className="mr-2 h-4 w-4" />
-              Paste Text
-            </Button>
-          </div>
-        </CardContent>
-        <CardFooter className="bg-ud-black text-white flex items-center justify-between text-sm rounded-bl-lg rounded-br-lg pb-0 py-2">
-          <div className="space-x-4">
-            <span>Words {wordCount}</span>
-            <span>Characters {charCount}</span>
-          </div>
-          <Button
-            onClick={handleSummarize}
-            disabled={!text.trim() || isLoading}
-          >
-            {isLoading ? "Summarizing..." : "Summarize My Text"}
-          </Button>
-        </CardFooter>
-      </Card>
-
-      {summary ? (
-        <div className="space-y-4">
-          <p className="whitespace-pre-wrap">{summary}</p>
-        </div>
-      ) : (
-        <Card className="flex-1 p-6 h-1/3 bg-gray-100">
-          <div className="flex h-full flex-col items-center justify-center text-center text-muted-foreground">
-            <FileText className="mb-4 h-12 w-12" />
-            <p className="text-lg font-medium">
-              Your summarized text will appear here
-            </p>
-          </div>
-        </Card>
-      )}
+      <SummarizerForm />
+      <SummaryResult summary={summary} />
+      {/* {summary ? <SummaryResult summary={summary} /> : <EmptySummaryResult />} */}
 
       <div className="flex items-center justify-between text-sm text-muted-foreground mt-4">
         <div className="space-x-4">
@@ -126,6 +71,7 @@ const TextSummarizer = () => {
           size="sm"
           className="gap-2"
           onClick={handleCopy}
+          disabled={!summary.trim()}
         >
           <Copy className="h-4 w-4" />
           Copy to Clipboard
