@@ -1,4 +1,5 @@
 import AppSidebar from "@/components/layouts/AppSidebar";
+import ToastContainer from "@/components/ToastContainer";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 
 export default function DashboardLayout({
@@ -15,6 +16,7 @@ export default function DashboardLayout({
         </div>
         {children}
       </main>
+      <ToastContainer />
     </SidebarProvider>
   );
 }
