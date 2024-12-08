@@ -101,18 +101,21 @@ const TextSummarizer = () => {
         </CardFooter>
       </Card>
 
-      <Card className="flex-1 p-6 h-1/3 bg-gray-100">
-        {summary ? (
-          <div className="space-y-4">
-            <p className="whitespace-pre-wrap">{summary}</p>
-          </div>
-        ) : (
+      {summary ? (
+        <div className="space-y-4">
+          <p className="whitespace-pre-wrap">{summary}</p>
+        </div>
+      ) : (
+        <Card className="flex-1 p-6 h-1/3 bg-gray-100">
           <div className="flex h-full flex-col items-center justify-center text-center text-muted-foreground">
             <FileText className="mb-4 h-12 w-12" />
-            <p>Your summarized text will appear here</p>
+            <p className="text-lg font-medium">
+              Your summarized text will appear here
+            </p>
           </div>
-        )}
-      </Card>
+        </Card>
+      )}
+
       <div className="flex items-center justify-between text-sm text-muted-foreground mt-4">
         <div className="space-x-4">
           <span>Words {summaryWordCount}</span>
