@@ -6,16 +6,17 @@ import {
   SidebarGroupContent,
 } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AppSidebarMenu from "@/components/layouts/AppSidebarMenu";
+import Image from "next/image";
+import { ICONS } from "@/constants/icons";
 
 const AppSidebar = () => {
   return (
     <>
-      <Sidebar>
-        <SidebarHeader className="bg-ud-black text-white px-6 py-4">
-          <div className="flex items-center">
+      <Sidebar className="w-72">
+        <SidebarHeader className="bg-ud-black text-white p-4">
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Avatar>
                 <AvatarImage src="/placeholder-user.jpg" />
@@ -28,22 +29,30 @@ const AppSidebar = () => {
                 </span>
               </div>
             </div>
-            <form action="/api/logout" method="POST">
-              <Button variant="ghost" className="w-full justify-start">
-                <LogOut className="mr-2 h-4 w-4" />
-              </Button>
-            </form>
+            <div className="ml-4 flex items-center">
+              <form action="/api/logout" method="POST">
+                <button className="w-full">
+                  <Image
+                    src={ICONS.LOGOUT_ICON}
+                    alt="Logout Icon"
+                    width={20}
+                    height={20}
+                    className="h-5 w-5"
+                  />
+                </button>
+              </form>
+            </div>
           </div>
         </SidebarHeader>
-        <SidebarContent className="bg-ud-black text-white">
-          <SidebarGroup>
+        <SidebarContent className="bg-ud-black text-white p-4">
+          <SidebarGroup className="p-0">
             <SidebarGroupContent>
               <Button className="w-full mt-2 px-4 py-2 bg-white text-black rounded-md shadow hover:bg-primary-dark">
                 + Summarize Text
               </Button>
             </SidebarGroupContent>
           </SidebarGroup>
-          <SidebarGroup>
+          <SidebarGroup className="p-0">
             <SidebarGroupContent>
               <AppSidebarMenu />
             </SidebarGroupContent>
