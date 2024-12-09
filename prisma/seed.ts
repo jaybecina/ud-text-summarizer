@@ -9,31 +9,34 @@ async function main() {
   const users = [
     {
       email: "admin@admin.com",
-      password: "password",
+      password: "password@123",
       first_name: "Admin",
       last_name: "Admin",
     },
     {
       email: "user@test.com",
-      password: "password",
+      password: "password@123",
       first_name: "User",
       last_name: "Test",
     },
   ];
 
-  for (const user of users) {
-    const hashedPassword = await bcrypt.hash(user.password, saltRounds);
-    await prisma.user.upsert({
-      where: { email: user.email },
-      update: {},
-      create: {
-        email: user.email,
-        password: hashedPassword,
-        first_name: user.first_name,
-        last_name: user.last_name,
-      },
+  const createUsersPromises = users.map((user) => {
+    return bcrypt.hash(user.password, saltRounds).then((hashedPassword) => {
+      return prisma.user.upsert({
+        where: { email: user.email },
+        update: {},
+        create: {
+          email: user.email,
+          password: hashedPassword,
+          first_name: user.first_name,
+          last_name: user.last_name,
+        },
+      });
     });
-  }
+  });
+
+  await Promise.all(createUsersPromises);
 
   console.log("Seeding completed.");
 }

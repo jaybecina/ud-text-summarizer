@@ -2,8 +2,8 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { signInSchema, type SignInFormData } from "@/lib/signInSchema";
-import { signin } from "@/app/actions/auth";
+import { signInSchema, type SignInFormData } from "@/schemas/signInSchema";
+import { signIn } from "@/app/actions/auth";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -33,7 +33,7 @@ const SignInForm = () => {
 
   async function onSubmit(data: SignInFormData) {
     setServerError(null);
-    const result = await signin(data);
+    const result = await signIn(data);
 
     if (result.error) {
       if (typeof result.error === "object" && "message" in result.error) {
@@ -61,7 +61,7 @@ const SignInForm = () => {
               <FormControl>
                 <Input placeholder="Email" {...field} className="rounded-lg" />
               </FormControl>
-              <FormMessage />
+              <FormMessage>{form.formState.errors.email?.message}</FormMessage>
             </FormItem>
           )}
         />
@@ -87,7 +87,9 @@ const SignInForm = () => {
                   </button>
                 </div>
               </FormControl>
-              <FormMessage />
+              <FormMessage>
+                {form.formState.errors.password?.message}
+              </FormMessage>
             </FormItem>
           )}
         />

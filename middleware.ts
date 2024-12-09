@@ -3,19 +3,23 @@ import type { NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
   const authToken = request.cookies.get("auth-token")?.value;
-  const isAuthPage = request.nextUrl.pathname === "/login";
+  const { pathname } = request.nextUrl;
 
-  if (!authToken && !isAuthPage) {
-    return NextResponse.redirect(new URL("/login", request.url));
+  // Define public and private routes
+  const publicRoutes = ["/signin", "/signup"];
+  const privateRoutes = ["/", "/profile", "/settings", "/history"];
+
+  if (!authToken && privateRoutes.includes(pathname)) {
+    return NextResponse.redirect(new URL("/signin", request.url));
   }
 
-  if (authToken && isAuthPage) {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+  if (authToken && publicRoutes.includes(pathname)) {
+    return NextResponse.redirect(new URL("/", request.url));
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/login"],
+  matcher: ["/", "/profile", "/settings", "/history", "/signin", "/signup"],
 };
