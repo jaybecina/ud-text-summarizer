@@ -45,7 +45,7 @@ const SignInForm = () => {
         });
       }
     } else {
-      router.push("/dashboard");
+      router.push("/");
       router.refresh();
     }
   }
