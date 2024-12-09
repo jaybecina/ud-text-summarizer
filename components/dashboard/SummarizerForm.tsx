@@ -1,4 +1,7 @@
 import { useState } from "react";
+import { createSummary } from "@/app/actions/summary";
+import { useSummaryStore } from "@/store/summaryStore";
+import { useUserStore } from "@/store/userStore";
 import {
   Card,
   CardHeader,
@@ -18,9 +21,11 @@ import { Textarea } from "@/components/ui/textarea";
 import Image from "next/image";
 import { ICONS } from "@/constants/icons";
 import { toast } from "react-hot-toast";
+import { Loader2 } from "lucide-react";
 
 const SummarizerForm = () => {
   const [text, setText] = useState<string>("");
+  const { user } = useUserStore.getState();
   const [wordCount, setWordCount] = useState<number>(0);
   const [charCount, setCharCount] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -56,6 +61,36 @@ const SummarizerForm = () => {
     setCharCount(value.length);
   };
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!text.trim()) {
+      toast.error("Please enter some text to summarize");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      if (!user) {
+        toast.error("Please sign in to create a summary");
+        return;
+      }
+      const result = await createSummary(text, user.id);
+
+      if (result.success) {
+        toast.success("Summary created successfully!");
+        setText("");
+        setWordCount(0);
+        setCharCount(0);
+      } else {
+        toast.error(result.error || "Failed to create summary");
+      }
+    } catch (error) {
+      toast.error("An error occurred while creating the summary");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleReset = () => {
     setText("");
     setWordCount(0);
@@ -69,12 +104,14 @@ const SummarizerForm = () => {
         <CardHeader className="bg-ud-black rounded-tl-lg rounded-tr-lg p-2"></CardHeader>
         <CardContent className="p-6 space-y-4">
           {showTextarea ? (
-            <Textarea
-              value={text}
-              onChange={handleTextChange}
-              className="min-h-[200px] w-full scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-200"
-              placeholder="Enter your text here..."
-            />
+            <form onSubmit={handleSubmit}>
+              <Textarea
+                value={text}
+                onChange={handleTextChange}
+                className="min-h-[200px] w-full scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-200"
+                placeholder="Enter your text here..."
+              />
+            </form>
           ) : (
             <div className="flex justify-center gap-4">
               <Dialog>
@@ -152,7 +189,8 @@ const SummarizerForm = () => {
               disabled={!text.trim() || isLoading}
               className="rounded-md bg-white text-black border-black hover:bg-white hover:text-black"
             >
-              {isLoading ? "Summarizing..." : "Summarize My Text"}
+              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {isLoading ? "Summarizing..." : "Summarize"}
             </Button>
           </div>
         </CardFooter>

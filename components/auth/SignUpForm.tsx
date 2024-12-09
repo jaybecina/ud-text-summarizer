@@ -15,11 +15,13 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { toast } from "react-hot-toast";
+import { useUserStore } from "@/store/userStore";
 
 const SignUpForm = () => {
   const router = useRouter();
+  const { setLoading } = useUserStore();
   const [serverError, setServerError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [showConfirmPassword, setShowConfirmPassword] =
@@ -38,6 +40,7 @@ const SignUpForm = () => {
 
   async function onSubmit(data: SignUpFormData) {
     setServerError(null);
+    setLoading(true);
     const formData = new FormData();
     formData.append("first_name", data.first_name);
     formData.append("last_name", data.last_name);
@@ -48,6 +51,7 @@ const SignUpForm = () => {
     const result = await signUp({}, formData);
 
     if (result.error) {
+      setLoading(false);
       if (typeof result.error === "object" && "message" in result.error) {
         setServerError(result.error.message as string);
       } else {
@@ -65,6 +69,7 @@ const SignUpForm = () => {
       );
 
       router.push("/signin");
+      setLoading(false);
     }
   }
 
@@ -178,10 +183,19 @@ const SignUpForm = () => {
         {serverError && <p className="text-red-500 text-sm">{serverError}</p>}
         <Button
           type="submit"
-          disabled={form.formState.isSubmitting}
+          disabled={
+            form.formState.isSubmitting || useUserStore.getState().isLoading
+          }
           className="w-full"
         >
-          {form.formState.isSubmitting ? "Signing up..." : "Sign up"}
+          {form.formState.isSubmitting || useUserStore.getState().isLoading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Signing up...
+            </>
+          ) : (
+            "Sign up"
+          )}
         </Button>
       </form>
     </Form>

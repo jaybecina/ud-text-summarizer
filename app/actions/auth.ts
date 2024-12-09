@@ -60,7 +60,14 @@ export async function signIn(formData: SignInFormData) {
       maxAge: 60 * 60 * 24, // 1 day
     });
 
-    return { success: true };
+    const userData = {
+      id: user.id,
+      email: user.email,
+      first_name: user.first_name,
+      last_name: user.last_name,
+    };
+
+    return { data: { user: userData }, success: true };
   } catch (error) {
     console.error("Error: ", error);
     return { error: { message: "An unexpected error occurred" } };
@@ -89,7 +96,7 @@ export async function signUp(prevState: any, formData: FormData) {
     });
 
     if (error) {
-      return { error: error.message };
+      return { error: { message: error.message } };
     }
 
     await createPrismaUser(first_name, last_name, email, password);
