@@ -1,6 +1,7 @@
 "use server";
 
 import { signInSchema, type SignInFormData } from "@/schemas/signInSchema";
+import { signUpSchema, type SignUpFormData } from "@/schemas/signUpSchema";
 import { PrismaClient } from "@prisma/client";
 import { createClient } from "@supabase/supabase-js";
 import bcrypt from "bcryptjs";
@@ -65,19 +66,58 @@ export async function signIn(formData: SignInFormData) {
 }
 
 export async function signUp(prevState: any, formData: FormData) {
-  const email = formData.get("email") as string;
-  const password = formData.get("password") as string;
-
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
+  const result = signUpSchema.safeParse({
+    first_name: formData.get("first_name"),
+    last_name: formData.get("last_name"),
+    email: formData.get("email"),
+    password: formData.get("password"),
+    confirmPassword: formData.get("confirmPassword"),
   });
 
-  if (error) {
-    return { error: error.message };
+  if (!result.success) {
+    return { error: result.error.format() };
   }
 
-  return { success: true, message: "Check your email to confirm your account" };
+  const { first_name, last_name, email, password } = result.data;
+
+  try {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+    });
+
+    if (error) {
+      return { error: error.message };
+    }
+
+    await createPrismaUser(first_name, last_name, email, password);
+
+    return {
+      success: true,
+      message: "Check your email to confirm your account",
+    };
+  } catch (error) {
+    console.error("Error: ", error);
+    return { error: { message: "An unexpected error occurred during signup" } };
+  }
+}
+
+async function createPrismaUser(
+  first_name: string,
+  last_name: string,
+  email: string,
+  password: string
+) {
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  await prisma.user.create({
+    data: {
+      first_name,
+      last_name,
+      email,
+      password: hashedPassword,
+    },
+  });
 }
 
 export async function signOut() {
@@ -86,5 +126,6 @@ export async function signOut() {
     return { error: error.message };
   }
   cookies().delete("session");
+  cookies().delete("auth-token");
   return { success: true };
 }
