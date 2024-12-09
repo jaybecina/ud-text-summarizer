@@ -12,11 +12,11 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Eye, EyeOff } from "lucide-react";
+import { toast } from "react-hot-toast";
 
 const SignInForm = () => {
   const router = useRouter();
@@ -45,6 +45,13 @@ const SignInForm = () => {
         });
       }
     } else {
+      toast.success(
+        <>
+          <div className="font-bold">Login Successful</div>
+          <div className="text-sm">You will be redirected shortly</div>
+        </>
+      );
+
       router.push("/");
       router.refresh();
     }
