@@ -2,8 +2,8 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { signInSchema, type SignInFormData } from "@/lib/signInSchema";
-import { signin } from "@/app/actions/auth";
+import { signInSchema, type SignInFormData } from "@/schemas/signInSchema";
+import { signIn } from "@/app/actions/auth";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -12,11 +12,11 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Eye, EyeOff } from "lucide-react";
+import { toast } from "react-hot-toast";
 
 const SignInForm = () => {
   const router = useRouter();
@@ -33,7 +33,7 @@ const SignInForm = () => {
 
   async function onSubmit(data: SignInFormData) {
     setServerError(null);
-    const result = await signin(data);
+    const result = await signIn(data);
 
     if (result.error) {
       if (typeof result.error === "object" && "message" in result.error) {
@@ -45,7 +45,14 @@ const SignInForm = () => {
         });
       }
     } else {
-      router.push("/dashboard");
+      toast.success(
+        <>
+          <div className="font-bold">Login Successful</div>
+          <div className="text-sm">You will be redirected shortly</div>
+        </>
+      );
+
+      router.push("/");
       router.refresh();
     }
   }
@@ -61,7 +68,7 @@ const SignInForm = () => {
               <FormControl>
                 <Input placeholder="Email" {...field} className="rounded-lg" />
               </FormControl>
-              <FormMessage />
+              <FormMessage>{form.formState.errors.email?.message}</FormMessage>
             </FormItem>
           )}
         />
@@ -87,7 +94,9 @@ const SignInForm = () => {
                   </button>
                 </div>
               </FormControl>
-              <FormMessage />
+              <FormMessage>
+                {form.formState.errors.password?.message}
+              </FormMessage>
             </FormItem>
           )}
         />
