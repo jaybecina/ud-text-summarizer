@@ -8,6 +8,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import AppSidebarMenu from "@/components/layouts/AppSidebarMenu";
+import { signOut } from "@/app/actions/auth";
 import Image from "next/image";
 import { ICONS } from "@/constants/icons";
 
@@ -30,7 +31,7 @@ const AppSidebar = () => {
               </div>
             </div>
             <div className="ml-4 flex items-center">
-              <form action="/api/logout" method="POST">
+              <form action={signOut} method="POST">
                 <button className="w-full">
                   <Image
                     src={ICONS.LOGOUT_ICON}

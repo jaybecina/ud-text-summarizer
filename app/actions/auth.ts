@@ -1,5 +1,7 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { signInSchema, type SignInFormData } from "@/schemas/signInSchema";
 import { signUpSchema, type SignUpFormData } from "@/schemas/signUpSchema";
 import { PrismaClient } from "@prisma/client";
@@ -127,5 +129,8 @@ export async function signOut() {
   }
   cookies().delete("session");
   cookies().delete("auth-token");
+
+  revalidatePath("/", "layout");
+  redirect("/signin");
   return { success: true };
 }
