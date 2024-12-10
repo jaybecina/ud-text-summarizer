@@ -1,17 +1,24 @@
-import { Card } from "@/components/ui/card";
+"use client";
 
-interface SummaryResult {
-  summary: string;
-}
+import { Card, CardContent } from "@/components/ui/card";
+import { useSummaryStore } from "@/store/summaryStore";
 
-const SummaryResult = ({ summary }: SummaryResult) => {
+const SummaryResult = () => {
+  const { currentSummary, isLoading } = useSummaryStore();
+  console.log("SummaryResult currentSummary: ", currentSummary);
+
+  if (isLoading) {
+    return <div>Loading summaries...</div>;
+  }
   return (
     <>
-      <Card className="h-[50vh] p-6">
-        <div className="flex h-full flex-col">
-          <p className="whitespace-pre-wrap text-md font-medium">{summary}</p>
-        </div>
-      </Card>
+      {currentSummary && (
+        <Card key={currentSummary.id}>
+          <CardContent className="h-[50vh] p-6">
+            <p className="mb-4">{currentSummary.summary}</p>
+          </CardContent>
+        </Card>
+      )}
     </>
   );
 };

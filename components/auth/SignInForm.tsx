@@ -15,11 +15,13 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { toast } from "react-hot-toast";
+import { useUserStore } from "@/store/userStore";
 
 const SignInForm = () => {
   const router = useRouter();
+  const { setUser, setLoading } = useUserStore();
   const [serverError, setServerError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
@@ -33,27 +35,47 @@ const SignInForm = () => {
 
   async function onSubmit(data: SignInFormData) {
     setServerError(null);
+    setLoading(true);
     const result = await signIn(data);
 
     if (result.error) {
+      setLoading(false);
       if (typeof result.error === "object" && "message" in result.error) {
         setServerError(result.error.message as string);
+        toast.error(
+          <div className="inline-block">
+            <div className="font-bold">{result.error.message}</div>
+            <div className="text-sm">Please try again</div>
+          </div>
+        );
       } else {
         form.setError("root", {
           type: "manual",
           message: "An unexpected error occurred",
         });
+        toast.error(
+          <div className="inline-block">
+            <div className="font-bold">An unexpected error occurred</div>
+            <div className="text-sm">Please try again</div>
+          </div>
+        );
       }
     } else {
+      console.log("success signin: ", result.data.user);
+
+      setUser(result.data?.user);
       toast.success(
-        <>
+        <div className="inline-block">
           <div className="font-bold">Login Successful</div>
           <div className="text-sm">You will be redirected shortly</div>
-        </>
+        </div>
       );
 
-      router.push("/");
-      router.refresh();
+      setTimeout(() => {
+        router.refresh();
+        router.push("/");
+      }, 1000);
+      setLoading(false);
     }
   }
 
@@ -103,10 +125,19 @@ const SignInForm = () => {
         {serverError && <p className="text-red-500 text-sm">{serverError}</p>}
         <Button
           type="submit"
-          disabled={form.formState.isSubmitting}
+          disabled={
+            form.formState.isSubmitting || useUserStore.getState().isLoading
+          }
           className="w-full"
         >
-          {form.formState.isSubmitting ? "Logging in..." : "Log in"}
+          {form.formState.isSubmitting || useUserStore.getState().isLoading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Logging in...
+            </>
+          ) : (
+            "Log in"
+          )}
         </Button>
       </form>
     </Form>
