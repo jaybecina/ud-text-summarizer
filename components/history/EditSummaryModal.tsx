@@ -75,11 +75,9 @@ const EditSummaryModal = ({
     setIsSubmitting(true);
 
     try {
-      console.log("onSubmit Edit.");
       const result = await updateSummary(summary.id, data.text, user.id);
 
       if (result.success && result.data) {
-        console.log("result.data: ", result.data);
         toast.success("Summary updated successfully!");
         setCurrentSummary(result.data, user.id);
         onUpdate(result.data);

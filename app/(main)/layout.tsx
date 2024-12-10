@@ -19,8 +19,7 @@ export default function DashboardLayout({
     const fetchSummaries = async () => {
       if (user?.id) {
         setIsLoading(true);
-        const { success, data } = await getSummaries(user.id);
-        console.log("fetchSummaries in mainLayout: ", data);
+        const { data } = await getSummaries(user.id);
         setSummaries(data ?? [], user.id);
         setIsLoading(false);
       }

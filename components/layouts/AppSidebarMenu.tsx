@@ -13,7 +13,6 @@ import { useSummaryStore } from "@/store/summaryStore";
 
 const AppSidebarMenu = () => {
   const { summaries } = useSummaryStore();
-  console.log("AppSidebarMenu summaries: ", summaries);
   return (
     <SidebarMenu className="p-0 mt-4">
       <SidebarMenuItem>

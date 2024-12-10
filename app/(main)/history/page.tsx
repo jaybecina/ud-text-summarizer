@@ -89,7 +89,6 @@ export default function HistoryPage() {
   };
 
   const filteredSummaries = useMemo(() => {
-    console.log("filtering Summaries...");
     const result = summaries
       .filter(
         (summary) =>
@@ -155,7 +154,6 @@ export default function HistoryPage() {
   };
 
   const handleEdit = (summary: Summary) => {
-    console.log("handleEdit summary: ", summary);
     setEditModalOpen(!editModalOpen);
     setEditingSummary(summary);
   };
