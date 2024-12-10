@@ -5,7 +5,6 @@ import { useSummaryStore } from "@/store/summaryStore";
 
 const SummaryResult = () => {
   const { currentSummary, isLoading } = useSummaryStore();
-  console.log("SummaryResult currentSummary: ", currentSummary);
 
   if (isLoading) {
     return <div>Loading summaries...</div>;

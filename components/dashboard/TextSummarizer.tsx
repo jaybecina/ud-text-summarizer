@@ -1,7 +1,6 @@
 "use client";
 
 import { useSummaryStore } from "@/store/summaryStore";
-import { getSummaries } from "@/app/actions/summary";
 import { useEffect, useState } from "react";
 import { Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -11,13 +10,12 @@ import SummarizerForm from "@/components/dashboard/SummarizerForm";
 import { toast } from "react-hot-toast";
 
 const TextSummarizer = () => {
-  const { summaries, currentSummary, setCurrentSummary } = useSummaryStore();
+  const { currentSummary, setCurrentSummary } = useSummaryStore();
 
   const [summaryWordCount, setSummaryWordCount] = useState<number>(0);
   const [summaryCharCount, setSummaryCharCount] = useState<number>(0);
 
   useEffect(() => {
-    // Calculate word and character counts for the `currentSummary`
     if (currentSummary?.summary) {
       const wordCount = currentSummary.summary.trim().split(/\s+/).length;
       const charCount = currentSummary.summary.length;
@@ -25,7 +23,6 @@ const TextSummarizer = () => {
       setSummaryWordCount(wordCount);
       setSummaryCharCount(charCount);
     } else {
-      // Reset counts if there's no current summary
       setSummaryWordCount(0);
       setSummaryCharCount(0);
     }

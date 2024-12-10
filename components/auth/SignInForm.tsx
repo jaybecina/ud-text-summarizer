@@ -61,8 +61,6 @@ const SignInForm = () => {
         );
       }
     } else {
-      console.log("success signin: ", result.data.user);
-
       setUser(result.data?.user);
       toast.success(
         <div className="inline-block">

@@ -48,7 +48,6 @@ export async function query(data: QueryProps) {
     }
 
     const result = await response.json();
-    console.log("result: ", result);
 
     if (Array.isArray(result) && result[0]?.summary_text) {
       return { success: true, data: result[0].summary_text };

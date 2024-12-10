@@ -8,15 +8,12 @@ const prisma = new PrismaClient();
 
 export async function createSummary(text: string, userId: string) {
   try {
-    console.log("creating summary...");
-
     if (!text) {
       console.error("No text to summarize");
       return { success: false, error: "No text to summarize" };
     }
 
     const { success, data } = await query({ inputs: text });
-    console.log("createSummary data: ", data);
 
     if (!success || !data) {
       console.error("Error creating summary:", data);
@@ -30,8 +27,6 @@ export async function createSummary(text: string, userId: string) {
         userId,
       },
     });
-
-    console.log("createSummary savedSummary: ", savedSummary);
 
     revalidatePath("/", "layout");
     return { success: true, data: savedSummary };
@@ -47,7 +42,6 @@ export async function getSummaries(userId: string) {
       where: { userId },
       orderBy: { createdAt: "desc" },
     });
-    console.log("getSummaries summaries: ", summaries);
     return { success: true, data: summaries };
   } catch (error) {
     console.error("Error fetching summaries:", error);

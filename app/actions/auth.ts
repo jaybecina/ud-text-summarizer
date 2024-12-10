@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { signInSchema, type SignInFormData } from "@/schemas/signInSchema";
-import { signUpSchema, type SignUpFormData } from "@/schemas/signUpSchema";
+import { signUpSchema } from "@/schemas/signUpSchema";
 import { PrismaClient } from "@prisma/client";
 import { createClient } from "@supabase/supabase-js";
 import bcrypt from "bcryptjs";

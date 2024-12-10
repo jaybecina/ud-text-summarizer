@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { createSummary } from "@/app/actions/summary";
 import { useSummaryStore } from "@/store/summaryStore";
 import {
@@ -48,10 +47,7 @@ const SummarizerForm = () => {
     },
   });
 
-  console.log("user from userStore: ", user);
-
   const handlePaste = async () => {
-    console.log("handlePaste");
     try {
       const clipboardText = await navigator.clipboard.readText();
       form.setValue("text", clipboardText);
