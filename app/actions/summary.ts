@@ -2,43 +2,38 @@
 
 import { revalidatePath } from "next/cache";
 import { PrismaClient } from "@prisma/client";
-import OpenAI from "openai";
+import { query } from "@/ai/summarizationAI";
 
 const prisma = new PrismaClient();
-const openai = new OpenAI({
-  apiKey: process.env["OPENAI_API_KEY"], // This is the default and can be omitted
-});
 
 export async function createSummary(text: string, userId: string) {
   try {
-    const completion = await openai.chat.completions.create({
-      messages: [
-        {
-          role: "system",
-          content:
-            "You are a helpful assistant that summarizes text concisely while maintaining key points.",
-        },
-        {
-          role: "user",
-          content: `Please summarize the following text:\n\n${text}`,
-        },
-      ],
-      model: "gpt-4",
-      temperature: 0.7,
-      max_tokens: 500,
-    });
+    console.log("creating summary...");
 
-    const summary = completion.choices[0].message.content;
+    if (!text) {
+      console.error("No text to summarize");
+      return { success: false, error: "No text to summarize" };
+    }
+
+    const { success, data } = await query({ inputs: text });
+    console.log("createSummary data: ", data);
+
+    if (!success || !data) {
+      console.error("Error creating summary:", data);
+      return { success: false, error: `No summary created. ${data}` };
+    }
 
     const savedSummary = await prisma.summary.create({
       data: {
         text,
-        summary: summary || "",
+        summary: data,
         userId,
       },
     });
 
-    revalidatePath("/dashboard");
+    console.log("createSummary savedSummary: ", savedSummary);
+
+    revalidatePath("/", "layout");
     return { success: true, data: savedSummary };
   } catch (error) {
     console.error("Error creating summary:", error);
@@ -52,6 +47,7 @@ export async function getSummaries(userId: string) {
       where: { userId },
       orderBy: { createdAt: "desc" },
     });
+    console.log("getSummaries summaries: ", summaries);
     return { success: true, data: summaries };
   } catch (error) {
     console.error("Error fetching summaries:", error);
@@ -60,16 +56,24 @@ export async function getSummaries(userId: string) {
 }
 
 export async function updateSummary(
-  id: string,
+  id: string | null,
   summary: string,
   userId: string
 ) {
   try {
+    if (!id) {
+      console.error("Invalid summary");
+      return { success: false, error: "Error invalid summary" };
+    }
+    console.error("updateSummary summary: ", summary);
+    console.error("updateSummary id: ", id);
+    console.error("updateSummary userId: ", userId);
     const updatedSummary = await prisma.summary.update({
       where: { id, userId },
-      data: { summary },
+      data: { text: summary },
     });
-    revalidatePath("/dashboard");
+    console.error("updateSummary: ", updatedSummary);
+    revalidatePath("/", "layout");
     return { success: true, data: updatedSummary };
   } catch (error) {
     console.error("Error updating summary:", error);
@@ -82,7 +86,7 @@ export async function deleteSummary(id: string, userId: string) {
     await prisma.summary.delete({
       where: { id, userId },
     });
-    revalidatePath("/dashboard");
+    revalidatePath("/", "layout");
     return { success: true };
   } catch (error) {
     console.error("Error deleting summary:", error);

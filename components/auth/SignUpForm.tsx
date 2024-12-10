@@ -62,10 +62,10 @@ const SignUpForm = () => {
       }
     } else {
       toast.success(
-        <>
+        <div className="inline-block">
           <div className="font-bold">Sign Up Successful</div>
           <div className="text-sm">{result.message}</div>
-        </>
+        </div>
       );
 
       router.push("/signin");

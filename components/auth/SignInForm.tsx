@@ -42,28 +42,40 @@ const SignInForm = () => {
       setLoading(false);
       if (typeof result.error === "object" && "message" in result.error) {
         setServerError(result.error.message as string);
+        toast.error(
+          <div className="inline-block">
+            <div className="font-bold">{result.error.message}</div>
+            <div className="text-sm">Please try again</div>
+          </div>
+        );
       } else {
         form.setError("root", {
           type: "manual",
           message: "An unexpected error occurred",
         });
+        toast.error(
+          <div className="inline-block">
+            <div className="font-bold">An unexpected error occurred</div>
+            <div className="text-sm">Please try again</div>
+          </div>
+        );
       }
     } else {
-      console.log("success signin.");
-      setUser(result.data.user);
+      console.log("success signin: ", result.data.user);
 
+      setUser(result.data?.user);
       toast.success(
-        <>
+        <div className="inline-block">
           <div className="font-bold">Login Successful</div>
           <div className="text-sm">You will be redirected shortly</div>
-        </>
+        </div>
       );
 
-      setLoading(false);
       setTimeout(() => {
-        router.push("/");
         router.refresh();
-      }, 3000);
+        router.push("/");
+      }, 1000);
+      setLoading(false);
     }
   }
 
