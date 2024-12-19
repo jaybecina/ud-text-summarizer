@@ -19,7 +19,7 @@ export default function SignUpPage() {
             />
           </div>
           <CardTitle className="text-2xl text-center">
-            Register to Undetectable AI
+            Register to UD Text Suummarizer
           </CardTitle>
           <p className="text-sm text-muted-foreground">
             Enter your information to register

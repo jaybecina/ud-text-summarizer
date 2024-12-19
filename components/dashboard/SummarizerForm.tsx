@@ -109,7 +109,7 @@ const SummarizerForm = () => {
 
   useEffect(() => {
     void clearCurrentSummary();
-  }, []);
+  });
 
   return (
     <Form {...form}>
