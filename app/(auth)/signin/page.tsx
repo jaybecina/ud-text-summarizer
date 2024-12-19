@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import SignInForm from "@/components/auth/SignInForm";
 import Image from "next/image";
+import Link from "next/link";
 import { IMAGES } from "@/constants/images";
 export default function SignInPage() {
   return (
@@ -17,7 +18,7 @@ export default function SignInPage() {
             />
           </div>
           <CardTitle className="text-2xl text-center">
-            Log in to Undetectable AI
+            Login to UD Text Summarizer
           </CardTitle>
           <p className="text-sm text-muted-foreground">
             Enter your email and password to continue
@@ -25,6 +26,14 @@ export default function SignInPage() {
         </CardHeader>
         <CardContent>
           <SignInForm />
+          <div className="text-center mt-4 text-sm">
+            <span>
+              Don't have an account?{" "}
+              <Link href="/signup" className="text-blue-600 hover:underline">
+                Sign up
+              </Link>
+            </span>
+          </div>
         </CardContent>
       </Card>
     </div>
