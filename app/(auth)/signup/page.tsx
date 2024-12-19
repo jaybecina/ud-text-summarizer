@@ -19,7 +19,7 @@ export default function SignUpPage() {
             />
           </div>
           <CardTitle className="text-2xl text-center">
-            Register to UD Text Suummarizer
+            Register to UD Text Summarizer
           </CardTitle>
           <p className="text-sm text-muted-foreground">
             Enter your information to register
