@@ -18,7 +18,7 @@ export default function SignInPage() {
             />
           </div>
           <CardTitle className="text-2xl text-center">
-            Login to UD Text Summarizer
+            Login to UD AI Text Summarizer
           </CardTitle>
           <p className="text-sm text-muted-foreground">
             Enter your email and password to continue
